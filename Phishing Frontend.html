@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AI Phishing Detection Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width:700px; margin:30px auto; }
+        label { font-weight: bold; }
+        textarea { width:100%; }
+        input[type="text"] { width:100%; }
+        pre { background:#f4f4f4; padding:10px; }
+        button { padding:8px 12px; }
+    </style>
+</head>
+<body>
+    <h2>AI Phishing Detection</h2>
+    <form id="emailForm">
+        <label>Sender Email:</label><br>
+        <input type="text" id="sender" placeholder="alerts@example.com"><br><br>
+
+        <label>Subject:</label><br>
+        <input type="text" id="subject" placeholder="Urgent: verify your account"><br><br>
+
+        <label>Email Body:</label><br>
+        <textarea id="email_text" rows="6" placeholder="Email content..."></textarea><br><br>
+
+        <button type="submit">Check Email</button>
+    </form>
+
+    <h3>Result:</h3>
+    <pre id="result">No result yet.</pre>
+
+    <script>
+        document.getElementById("emailForm").onsubmit = async function(e) {
+            e.preventDefault();
+            const sender = document.getElementById("sender").value;
+            const subject = document.getElementById("subject").value;
+            const email_text = document.getElementById("email_text").value;
+
+            const payload = { sender, subject, email_text };
+
+            try {
+                const res = await fetch("http://127.0.0.1:8000/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById("result").textContent = "Error: " + err.toString();
+            }
+        };
+    </script>
+</body>
+</html>
